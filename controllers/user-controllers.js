@@ -11,7 +11,23 @@ const userController = {
             });
     },
 
-    
+    getUserById({ params }, res) {
+        User.findOne({ _id: params.id })
+            .populate({ path: 'thoughts', select: '-_v' })
+            .populate({ path: 'friends', select: '-_v' })
+            .select('-_v')
+            .then(dbUserData => {
+                if (!dbUserData) {
+                    res.status(404).send({ message: 'There is no user with that ID' });
+                    return;
+                }
+                res.json(dbUserData);
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(404).json(err);
+            });
+    },
 }
 
 
